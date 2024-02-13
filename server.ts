@@ -7,17 +7,17 @@ import nodemailer from "npm:nodemailer";
 
 const env = await load();
 
-const SMTP_USER = env["SMTP_USER"];
-const SMTP_PASS = env["SMTP_PASS"];
-const SMTP_PORT = env["SMTP_PORT"];
-const SMTP_HOST = env["SMTP_HOST"];
-const RECEIVER_EMAILS = env["RECEIVER_EMAILS"];
+const SMTP_USER = env["SMTP_USER"] || Deno.env.get("SMTP_USER");
+const SMTP_PASS = env["SMTP_PASS"] || Deno.env.get("SMTP_PASS");
+const SMTP_PORT = env["SMTP_PORT"] || Deno.env.get("SMTP_PORT");
+const SMTP_HOST = env["SMTP_HOST"] || Deno.env.get("SMTP_HOST");
+const RECEIVER_EMAILS =
+  env["RECEIVER_EMAILS"] || Deno.env.get("RECEIVER_EMAILS");
 
-assert(SMTP_USER);
-assert(SMTP_PASS);
-assert(SMTP_PORT);
-assert(SMTP_HOST);
-assert(RECEIVER_EMAILS);
+assert(
+  SMTP_USER && SMTP_PASS && SMTP_PORT && SMTP_HOST && RECEIVER_EMAILS,
+  "Missing environment variables"
+);
 
 const receiverEmails = RECEIVER_EMAILS.split(",");
 receiverEmails.forEach((s) => s.trim());
@@ -120,6 +120,6 @@ async function job() {
   console.log(result);
 }
 
-Deno.cron("Check flavors", "0 9 * * *", () => {
-  job();
-});
+// Deno.cron("Check flavors", "0 9 * * *", () => {
+//   job();
+// });

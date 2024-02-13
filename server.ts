@@ -1,18 +1,14 @@
 import { DOMParser } from "https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm.ts";
 import { assert } from "https://deno.land/std@0.215.0/assert/mod.ts";
-import { load } from "https://deno.land/std@0.215.0/dotenv/mod.ts";
 import * as cheerio from "npm:cheerio";
 import { parse } from "npm:date-fns";
 import nodemailer from "npm:nodemailer";
 
-const env = await load();
-
-const SMTP_USER = env["SMTP_USER"] || Deno.env.get("SMTP_USER");
-const SMTP_PASS = env["SMTP_PASS"] || Deno.env.get("SMTP_PASS");
-const SMTP_PORT = env["SMTP_PORT"] || Deno.env.get("SMTP_PORT");
-const SMTP_HOST = env["SMTP_HOST"] || Deno.env.get("SMTP_HOST");
-const RECEIVER_EMAILS =
-  env["RECEIVER_EMAILS"] || Deno.env.get("RECEIVER_EMAILS");
+const SMTP_USER = Deno.env.get("SMTP_USER");
+const SMTP_PASS = Deno.env.get("SMTP_PASS");
+const SMTP_PORT = Deno.env.get("SMTP_PORT");
+const SMTP_HOST = Deno.env.get("SMTP_HOST");
+const RECEIVER_EMAILS = Deno.env.get("RECEIVER_EMAILS");
 
 assert(
   SMTP_USER && SMTP_PASS && SMTP_PORT && SMTP_HOST && RECEIVER_EMAILS,

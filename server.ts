@@ -108,6 +108,10 @@ async function job() {
   if (found) {
     sendEmail(result);
   }
+
+  console.log(result);
 }
 
-job();
+Deno.cron("Check flavors", "0 9 * * *", () => {
+  job();
+});

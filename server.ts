@@ -1,16 +1,26 @@
 import { DOMParser } from "https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm.ts";
 import { assert } from "https://deno.land/std@0.215.0/assert/mod.ts";
+import { load } from "https://deno.land/std@0.215.0/dotenv/mod.ts";
 import * as cheerio from "npm:cheerio";
 import { parse } from "npm:date-fns";
 import nodemailer from "npm:nodemailer";
 
-const SMTP_USER = Deno.env.get("SMTP_USER");
-const SMTP_PASS = Deno.env.get("SMTP_PASS");
-const SMTP_PORT = Deno.env.get("SMTP_PORT");
-const RECEIVER_EMAILS = Deno.env
-  .get("RECEIVER_EMAILS")
-  ?.split(",")
-  .forEach((s) => s.trim());
+const env = await load();
+
+const SMTP_USER = env["SMTP_USER"];
+const SMTP_PASS = env["SMTP_PASS"];
+const SMTP_PORT = env["SMTP_PORT"];
+const SMTP_HOST = env["SMTP_HOST"];
+const RECEIVER_EMAILS = env["RECEIVER_EMAILS"];
+
+assert(SMTP_USER);
+assert(SMTP_PASS);
+assert(SMTP_PORT);
+assert(SMTP_HOST);
+assert(RECEIVER_EMAILS);
+
+const receiverEmails = RECEIVER_EMAILS.split(",");
+receiverEmails.forEach((s) => s.trim());
 
 type Result = {
   flavors: string[];
@@ -30,7 +40,7 @@ function parseDateString(dateStr: string) {
 
 function sendEmail(result: Result) {
   const transporter = nodemailer.createTransport({
-    host: "smtppro.zoho.com",
+    host: SMTP_HOST,
     port: parseInt(SMTP_PORT || "465"),
     secure: true,
     auth: {
@@ -44,7 +54,7 @@ function sendEmail(result: Result) {
     return;
   }
 
-  for (const receiver of RECEIVER_EMAILS as string[]) {
+  for (const receiver of receiverEmails) {
     const msg = {
       from: `Joe Lee <${SMTP_USER}>`,
       to: receiver,
@@ -101,9 +111,7 @@ async function job() {
     result.flavors.push(scrapeResult[i]);
   }
 
-  const found = result.flavors.some((f) =>
-    f.toLowerCase().includes("peachy kiwi")
-  );
+  const found = result.flavors.some((f) => f.toLowerCase().includes("smurf"));
 
   if (found) {
     sendEmail(result);

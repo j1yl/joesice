@@ -116,6 +116,6 @@ async function job() {
   console.log(result);
 }
 
-Deno.cron("Check flavors", "0 9 * * *", () => {
+Deno.cron("Check flavors", "0 20 * * *", () => {
   job();
 });

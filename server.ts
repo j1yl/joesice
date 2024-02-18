@@ -54,7 +54,11 @@ function sendEmail(result: Result) {
     const msg = {
       from: `Joe Lee <${SMTP_USER}>`,
       to: receiver,
-      subject: "Joe's Ice Cream has Peachy Kiwi!",
+      subject: `${
+        receiver === "chloekadiman@gmail.com" ?? "Hi PAUF! "
+      }Joe's Ice has your favorite flavors!${
+        receiver === "chloekadiman@gmail.com" ?? " 🍦🍦🍦 >_< 0_o ._. :3 <8"
+      }`,
       text: `Flavors:\n\n${result.flavors.join("\n")}\n\n${result.date}`,
     };
 
@@ -107,7 +111,12 @@ async function job() {
     result.flavors.push(scrapeResult[i]);
   }
 
-  const found = result.flavors.some((f) => f.toLowerCase().includes("smurf"));
+  const found = result.flavors.some(
+    (f) =>
+      f.toLowerCase().includes("peach") ||
+      f.toLowerCase().includes("kiwi") ||
+      f.toLowerCase().includes("smurf")
+  );
 
   if (found) {
     sendEmail(result);

@@ -128,3 +128,45 @@ async function job() {
 Deno.cron("Check flavors", "0 20 * * *", () => {
   job();
 });
+
+Deno.serve(async (req) => {
+  const res: Result = {
+    flavors: [],
+    date: null,
+  };
+
+  if (req.method !== "GET" || req.url !== "/") {
+    return new Response("", {
+      status: 405,
+    });
+  }
+
+  const scrapeResult = await scrape();
+  if (!scrapeResult) {
+    return new Response("", {
+      status: 500,
+    });
+  }
+
+  for (let i = 3; i < scrapeResult.length - 1; i++) {
+    res.flavors.push(scrapeResult[i]);
+  }
+
+  const found = res.flavors.some(
+    (f) =>
+      f.toLowerCase().includes("peach") ||
+      f.toLowerCase().includes("kiwi") ||
+      f.toLowerCase().includes("smurf")
+  );
+
+  res.date = parseDateString(scrapeResult[scrapeResult.length - 1]);
+
+  const body = JSON.stringify({
+    ...res,
+    found,
+  });
+
+  return new Response(body, {
+    status: 200,
+  });
+});
